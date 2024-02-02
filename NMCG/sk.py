@@ -11,17 +11,21 @@ from sklearn.metrics.pairwise import cosine_similarity
 # import pathlib
 # import textwrap
 import google.generativeai as genai
+from pymongo import MongoClient
 
 nltk.download('punkt')
 nltk.download('wordnet')
 
 GREETING_INPUTS = ('hello', 'hi', 'greetings', 'sup', 'what\'s up', 'hey',)
+SENDOFF_INPUTS = ('bye','thankyou','see you later','time to go','okay then bye')
 TIME_INPUTS = ("whats' the time", "time", " what time is it?", "what is the time?", "could you tell me the time please?", "do you have the time?")
 DATE_INPUTS = ("what date is it today?", "date", "what's the date?", "do you know the date?", "what date are we on today?", "what's the date today?", "what's today's date?")
-GREETING_RESPONSES = ['hi', 'hey', 'hi there', 'hello', 'I am glad! You are talking to me']
+GREETING_RESPONSES = ['hi', 'hey', 'hi there', 'hello', 'I am glad! You are talking to me','Hi! Its great to see you again.', 'Good [morning/afternoon/evening]! I hope your day is going well.','Greetings! I hope everything is going smoothly for you.']
+SENDOFF_RESPONSES = ['Take care and stay in touch!','Until we meet again, take care of yourself.','Goodbye for now, but not forever.','Farewell, but not goodbye. See you soon!']
 
-with open("text.txt", 'r',encoding='utf-8') as file:
-    raw = file.read()
+client = MongoClient("mongodb+srv://kaushikkadari321:767187@cluster0.yxjavbe.mongodb.net/")
+db = client["Nmcg"]
+collection = db.Chatbot
 
 lemmer = nltk.stem.WordNetLemmatizer()
 remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
@@ -46,11 +50,15 @@ def date(sentence):
         return True
     return False
 
+def sendoff(sentence):
+    for word in sentence.split():
+        if word.lower() in SENDOFF_INPUTS:
+            return random.choice(SENDOFF_RESPONSES)
+
 def greeting(sentence):
     for word in sentence.split():
         if word.lower() in GREETING_INPUTS:
             return random.choice(GREETING_RESPONSES)
-
 
 def response(user_response):
     res1 = greeting(user_response)
@@ -72,13 +80,17 @@ def response(user_response):
         date1=re.findall(r'\d\d\d\d-\d\d-\d\d',date_time)
         return date1[0]
 
-    
-    # print([sentence_tokens[:2], word_tokens[:2]])
+    res4 = sendoff(user_response)
+    if (res4):
+        return res4
 
+    # print([sentence_tokens[:2], word_tokens[:2]])
+    my_object = collection.find_one()["raw"]
+    x = my_object
+    
     robo_response = ''
-    word_tokens = nltk.word_tokenize(raw)
-   
-    sentence_tokens = nltk.sent_tokenize(raw)
+    word_tokens = nltk.word_tokenize(x)
+    sentence_tokens = nltk.sent_tokenize(x)
     sentence_tokens.append(user_response)
     vectorizer = TfidfVectorizer(tokenizer=lem_normalize, stop_words='english')
     tfidf = vectorizer.fit_transform(sentence_tokens)
@@ -93,17 +105,13 @@ def response(user_response):
     req_tfidf = flat[-2]
     if req_tfidf == 0:
         return '{} Sorry, I don\'t understand you'.format(robo_response)
-    elif req_tfidf >0.21:
-        return  robo_response + sentence_tokens[idx]
+    elif req_tfidf >0.175:
+        robo_response +=  sentence_tokens[idx].replace(user_response + ", ", "")
+        return robo_response
     # .replace(user_response,"")
     else:
         inp = user_response
-        response_parapharase = model.generate_content(f"""give me the paraphrase answer {inp} in the form of text in less than 50 words.""")
-        new_string = user_response + ", " + response_parapharase.text[:-1].replace(".",",")+". "
-        
-        with open("text.txt", 'a',encoding='utf-8') as file:
-            file.write(new_string.replace("*",""))
-
-        # text.raw = text.raw + user_response + ", " + response_parapharase.text.replace(".",",")+". "
-        return "We didn't understand that! Here are some results from Online:\n" + response_parapharase.text
-print(response("how to reduce water pollution"))
+        response_parapharase = model.generate_content(f"""give the answer {inp} in the form of text in less than 50 words.""")
+        y = x + "\n" + user_response + ", " + response_parapharase.text[:-1].replace(".",",")+". "
+        collection.find_one_and_replace({'raw': x}, {'raw': y})
+        return "Sorry, I couldn't find results for that. Here are some results from Online:\n" + response_parapharase.text
