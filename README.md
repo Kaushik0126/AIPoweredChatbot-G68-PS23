@@ -1,5 +1,3 @@
-# AIPoweredChatbot-G68-PS23
-AI powered chatbot with interactive UI
 # NMCG CHATBOT
 A Chatbot application for Ganga Cleaning Awareness Campaign.
 # Visit our webpage at: 
@@ -8,7 +6,7 @@ https://nmcg-chatbot.onrender.com
 
 # Problem Statement
 Create an AI, ML & Chatbot powered interactive mascot (Chacha Chaudhary) and 
-digital avatar to raise awareness and disseminate information about the Namami 
+digital avatar to raise awareness and disseminate information about the Namami
 Gange Programme to school children, the common man, and all stakeholders of 
 NMCG. 
 - The digital avatar/mascot should be able to interact with people of all ages and 
@@ -27,7 +25,7 @@ the Namami Gange Programme and the importance of river conservation.
 - PYTHON
 - JAVASCRIPT
 - ADOBE ANIMATE
-- GOOGLE API'S
+- GOOGLE GEMINI API'S
  ####  Installation
 * There is no need to install this Application.You just need to follow through our Website.
 * There must be minimum requirement of operating system to access this website.
@@ -37,12 +35,12 @@ the Namami Gange Programme and the importance of river conservation.
 
 
 # Authors
-- B.R.Sohith Kumar Reddy
-- K.Koushik Reddy
-- M.Sree Charan Reddy
-- P.Sreenadh Reddy
-- A.Sudheep Bhaskar
-- Chilivery Sripad
+- K.Koushik Reddy (https://github.com/Kaushik0126)
+- B.R.Sohith Kumar Reddy (https://github.com/Sohith-reddy)
+- M.Sree Charan Reddy (https://github.com/sreecharan1306)
+- P.Sreenadh Reddy (https://github.com/Sreenadh3)
+- A.Sudheep Bhaskar (https://github.com/Heisenberg09Xd)
+- Chilivery Sripad (https://github.com/Sripad1003)
 
 
 # Licensing
